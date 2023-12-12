@@ -104,6 +104,7 @@ func runCommand(command string, readStdout bool, arguments ...string) (int, stri
 	if command == "launchctl" {
 		slurp, _ := ioutil.ReadAll(stderr)
 		if len(slurp) > 0 && !bytes.HasSuffix(slurp, []byte("Operation now in progress\n")) {
+			cmd.Wait()
 			return 0, "", fmt.Errorf("%q failed with stderr: %s", command, slurp)
 		}
 	}
@@ -111,6 +112,7 @@ func runCommand(command string, readStdout bool, arguments ...string) (int, stri
 	if readStdout {
 		out, err := ioutil.ReadAll(stdout)
 		if err != nil {
+			cmd.Wait()
 			return 0, "", fmt.Errorf("%q failed while attempting to read stdout: %v", command, err)
 		} else if len(out) > 0 {
 			output = string(out)
